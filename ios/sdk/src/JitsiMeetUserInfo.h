@@ -30,9 +30,24 @@
  * URL for the user avatar.
  */
 @property (nonatomic, copy, nullable) NSURL *avatar;
+/**
+ * MARK - Armakom - User room id to join auth required
+ */
+@property (nonatomic, copy, nullable) NSString *userRoomId;
+/**
+ * MARK - Armakom - User room password to join auth required
+ */
+@property (nonatomic, copy, nullable) NSString *userRoomPassword;
+/**
+ * MARK - Armakom - jwt token to connect auth required rooms
+ */
+@property (nonatomic, copy, nullable) NSString *jwt;
 
 - (instancetype _Nullable)initWithDisplayName:(NSString *_Nullable)displayName
                                      andEmail:(NSString *_Nullable)email
-                                    andAvatar:(NSURL *_Nullable) avatar;
+                                    andAvatar:(NSURL *_Nullable) avatar
+                                    andUserRoomId:(NSString *_Nullable)userRoomId
+                                    andUserRoomPassword:(NSString *_Nullable)userRoomPassword
+                                    andJwt:(NSString *_Nullable)jwt;
 
 @end

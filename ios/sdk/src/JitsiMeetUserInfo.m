@@ -18,14 +18,21 @@
 
 @implementation JitsiMeetUserInfo
 
+// MARK - Armakom parameters are added
 - (instancetype)initWithDisplayName:(NSString *)displayName
                            andEmail:(NSString *)email
-                          andAvatar:(NSURL *_Nullable) avatar {
+                           andAvatar:(NSURL *_Nullable) avatar
+                           andUserRoomId:(NSString * _Nullable)userRoomId
+                           andUserRoomPassword:(NSString * _Nullable)userRoomPassword
+                           andJwt:(NSString * _Nullable)jwt  {
     self = [super init];
     if (self) {
         self.displayName = displayName;
         self.email = email;
         self.avatar = avatar;
+        self.userRoomId = userRoomId;
+        self.userRoomPassword = userRoomPassword;
+        self.jwt = jwt;
     }
 
     return self;
@@ -47,6 +54,19 @@
         if (avatarURL != nil) {
             dict[@"avatarURL"] = avatarURL;
         }
+    }
+    
+    // MARK - Armakom push Armakom parameters inside dictionary
+    if (self.userRoomId != nil) {
+        dict[@"userRoomId"] = self.userRoomId;
+    }
+    
+    if (self.userRoomPassword != nil) {
+        dict[@"userRoomPassword"] = self.userRoomPassword;
+    }
+    
+    if (self.jwt != nil) {
+        dict[@"jwt"] = self.jwt;
     }
 
     return dict;

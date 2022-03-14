@@ -15,6 +15,7 @@ import { SETTINGS_UPDATED } from './actionTypes';
 import { updateSettings } from './actions';
 import { handleCallIntegrationChange, handleCrashReportingChange } from './functions';
 
+import logger from './logger';
 
 /**
  * The middleware of the feature base/settings. Distributes changes to the state
@@ -29,20 +30,24 @@ MiddlewareRegistry.register(store => next => action => {
 
     switch (action.type) {
     case APP_WILL_MOUNT:
+        logger.info('armakom-log [settings-middleware] APP_WILL_MOUNT');
         _initializeCallIntegration(store);
         _initializeShowPrejoin(store);
         break;
     case PREJOIN_INITIALIZED: {
+        logger.info('armakom-log [settings-middleware] PREJOIN_INITIALIZED');
         _maybeUpdateDisplayName(store);
         break;
     }
     case SETTINGS_UPDATED:
+        logger.info('armakom-log [settings-middleware] SETTINGS_UPDATED');
         _maybeHandleCallIntegrationChange(action);
         _maybeSetAudioOnly(store, action);
         _updateLocalParticipant(store, action);
         _maybeCrashReportingChange(action);
         break;
     case SET_LOCATION_URL:
+        logger.info('armakom-log [settings-middleware] SET_LOCATION_URL');
         _updateLocalParticipantFromUrl(store);
         break;
     }
@@ -60,6 +65,7 @@ MiddlewareRegistry.register(store => next => action => {
 function _initializeShowPrejoin({ dispatch, getState }) {
     const { userSelectedSkipPrejoin } = getState()['features/base/settings'];
 
+    logger.info('armakom-log [settings-middleware] userSelectedSkipPrejoin:', userSelectedSkipPrejoin);
     if (userSelectedSkipPrejoin) {
         dispatch(setPrejoinPageVisibility(false));
     }
@@ -75,6 +81,7 @@ function _initializeShowPrejoin({ dispatch, getState }) {
 function _initializeCallIntegration({ getState }) {
     const { disableCallIntegration } = getState()['features/base/settings'];
 
+    logger.info('armakom-log [settings-middleware] disableCallIntegration:', disableCallIntegration);
     if (typeof disableCallIntegration === 'boolean') {
         handleCallIntegrationChange(disableCallIntegration);
     }
@@ -94,6 +101,7 @@ function _mapSettingsFieldToParticipant(settingsField) {
         return 'name';
     }
 
+    logger.info('armakom-log [settings-middleware] _mapSettingsFieldToParticipant');
     return settingsField;
 }
 
@@ -106,6 +114,7 @@ function _mapSettingsFieldToParticipant(settingsField) {
  */
 function _maybeHandleCallIntegrationChange({ settings: { disableCallIntegration } }) {
     if (typeof disableCallIntegration === 'boolean') {
+        logger.info('armakom-log [settings-middleware] _maybeHandleCallIntegrationChange disableCallIntegration:', disableCallIntegration);
         handleCallIntegrationChange(disableCallIntegration);
     }
 }
@@ -119,6 +128,7 @@ function _maybeHandleCallIntegrationChange({ settings: { disableCallIntegration 
  */
 function _maybeCrashReportingChange({ settings: { disableCrashReporting } }) {
     if (typeof disableCrashReporting === 'boolean') {
+        logger.info('armakom-log [settings-middleware] _maybeCrashReportingChange disableCrashReporting:', disableCrashReporting);
         handleCrashReportingChange(disableCrashReporting);
     }
 }
@@ -135,6 +145,7 @@ function _maybeSetAudioOnly(
         { dispatch },
         { settings: { startAudioOnly } }) {
     if (typeof startAudioOnly === 'boolean') {
+        logger.info('armakom-log [settings-middleware] _maybeSetAudioOnly startAudioOnly:', startAudioOnly);
         dispatch(setAudioOnly(startAudioOnly));
     }
 }
@@ -149,7 +160,7 @@ function _maybeSetAudioOnly(
 function _maybeUpdateDisplayName({ dispatch, getState }) {
     const state = getState();
     const hasJwt = Boolean(state['features/base/jwt'].jwt);
-
+    logger.info('armakom-log [settings-middleware] _maybeUpdateDisplayName hasJwt:', hasJwt);
     if (hasJwt) {
         const displayName = getJwtName(state);
 
@@ -183,6 +194,7 @@ function _updateLocalParticipant({ dispatch, getState }, action) {
         }
     }
 
+    logger.info('armakom-log [settings-middleware] _updateLocalParticipant newLocalParticipant:', JSON.stringify(newLocalParticipant));
     dispatch(participantUpdated(newLocalParticipant));
 }
 
@@ -197,14 +209,18 @@ function _updateLocalParticipant({ dispatch, getState }, action) {
 function _updateLocalParticipantFromUrl({ dispatch, getState }) {
     const urlParams
         = parseURLParams(getState()['features/base/connection'].locationURL);
+    logger.info('armakom-log [settings-middleware] _updateLocalParticipantFromUrl urlParams:', JSON.stringify(urlParams));
     const urlEmail = urlParams['userInfo.email'];
     const urlDisplayName = urlParams['userInfo.displayName'];
+    logger.info('armakom-log [settings-middleware] _updateLocalParticipantFromUrl urlEmail:', urlEmail, ' - urlDisplayName:', urlDisplayName);
 
     if (!urlEmail && !urlDisplayName) {
+        logger.info('armakom-log [settings-middleware] _updateLocalParticipantFromUrl return');
         return;
     }
 
     const localParticipant = getLocalParticipant(getState());
+    logger.info('armakom-log [settings-middleware] _updateLocalParticipantFromUrl 1 localParticipant:', JSON.stringify(localParticipant));
 
     if (localParticipant) {
         const displayName = _.escape(urlDisplayName);
@@ -220,5 +236,6 @@ function _updateLocalParticipantFromUrl({ dispatch, getState }) {
             displayName,
             email
         }));
+        logger.info('armakom-log [settings-middleware] _updateLocalParticipantFromUrl 2');
     }
 }

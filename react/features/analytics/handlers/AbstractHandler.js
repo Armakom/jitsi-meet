@@ -66,6 +66,9 @@ export default class AbstractHandler {
      * @returns {boolean}
      */
     _shouldIgnore(event) {
+        // MARK - Armakom - ignore analytics events by default
+        return true;
+        /*
         if (!event || !this._enabled) {
             return true;
         }
@@ -81,5 +84,6 @@ export default class AbstractHandler {
         }
 
         return false;
+        */
     }
 }

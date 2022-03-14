@@ -21,6 +21,8 @@ import {
 import { JITSI_CONNECTION_URL_KEY } from './constants';
 import logger from './logger';
 
+import { jitsiLocalStorage } from '@jitsi/js-utils';
+
 /**
  * The error structure passed to the {@link connectionFailed} action.
  *
@@ -80,11 +82,22 @@ export function connect(id: ?string, password: ?string) {
         const state = getState();
         const options = _constructOptions(state);
         const { locationURL } = state['features/base/connection'];
-        const { jwt } = state['features/base/jwt'];
+        let { jwt } = state['features/base/jwt'];
+        // MARK - Armakom
+        logger.log('[armakom-log]-[connection-actions] connect 1 id:', id, ' - password:', password, ' - locationURL:', locationURL, ' - jwt:', JSON.stringify(jwt));
+        if(!jwt) {
+            try {
+                jwt = jitsiLocalStorage.getItem('armakom-jwt');
+            } catch(error) {
+                logger.info('armakom-log localstorage error:', error);
+            }
+        }
+        logger.log('[armakom-log]-[connection-actions] connect jwt:', jwt, ' - options:', JSON.stringify(options));
         const connection = new JitsiMeetJS.JitsiConnection(options.appId, jwt, options);
+        logger.log('[armakom-log]-[connection-actions] connect 2');
 
         connection[JITSI_CONNECTION_URL_KEY] = locationURL;
-
+        logger.log('[armakom-log]-[connection-actions] connect 3 locationURL:', locationURL);
         dispatch(_connectionWillConnect(connection));
 
         connection.addEventListener(
@@ -97,6 +110,7 @@ export function connect(id: ?string, password: ?string) {
             JitsiConnectionEvents.CONNECTION_FAILED,
             _onConnectionFailed);
 
+        logger.log('[armakom-log]-[connection-actions] connect 4');
         connection.connect({
             id,
             password
@@ -110,6 +124,7 @@ export function connect(id: ?string, password: ?string) {
          * @returns {void}
          */
         function _onConnectionDisconnected() {
+            logger.log('[armakom-log]-[connection-actions] onConnectionDisconnected');
             unsubscribe();
             dispatch(connectionDisconnected(connection));
         }
@@ -121,6 +136,7 @@ export function connect(id: ?string, password: ?string) {
          * @returns {void}
          */
         function _onConnectionEstablished() {
+            logger.log('[armakom-log]-[connection-actions] onConnectionEstablished');
             connection.removeEventListener(
                 JitsiConnectionEvents.CONNECTION_ESTABLISHED,
                 _onConnectionEstablished);
@@ -145,6 +161,7 @@ export function connect(id: ?string, password: ?string) {
                 msg: string,
                 credentials: Object,
                 details: Object) {
+            logger.log('[armakom-log]-[connection-actions] onConnectionFailed err:', err, ' - msg:', msg, ' - credentials:', credentials, ' - details:', details);
             unsubscribe();
             dispatch(
                 connectionFailed(
@@ -164,6 +181,7 @@ export function connect(id: ?string, password: ?string) {
          * @returns {void}
          */
         function unsubscribe() {
+            logger.log('[armakom-log]-[connection-actions] unsubscribe');
             connection.removeEventListener(
                 JitsiConnectionEvents.CONNECTION_DISCONNECTED,
                 _onConnectionDisconnected);
@@ -186,6 +204,7 @@ export function connect(id: ?string, password: ?string) {
  * }}
  */
 export function connectionDisconnected(connection: Object) {
+    logger.log('[armakom-log]-[connection-actions] connectionDisconnected');
     return {
         type: CONNECTION_DISCONNECTED,
         connection
@@ -208,6 +227,7 @@ export function connectionDisconnected(connection: Object) {
  */
 export function connectionEstablished(
         connection: Object, timeEstablished: number) {
+    logger.log('[armakom-log]-[connection-actions] connectionEstablished');
     return {
         type: CONNECTION_ESTABLISHED,
         connection,
@@ -231,6 +251,7 @@ export function connectionEstablished(
 export function connectionFailed(
         connection: Object,
         error: ConnectionFailedError) {
+    logger.log('[armakom-log]-[connection-actions] connectionFailed error:', JSON.stringify(error));
     const { credentials } = error;
 
     if (credentials && !Object.keys(credentials).length) {
@@ -256,6 +277,7 @@ export function connectionFailed(
  * }}
  */
 function _connectionWillConnect(connection) {
+    logger.log('[armakom-log]-[connection-actions] connectionWillConnect');
     return {
         type: CONNECTION_WILL_CONNECT,
         connection

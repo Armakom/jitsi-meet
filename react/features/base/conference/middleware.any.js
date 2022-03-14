@@ -249,7 +249,7 @@ function _conferenceJoined({ dispatch, getState }, next, action) {
  */
 function _connectionEstablished({ dispatch }, next, action) {
     const result = next(action);
-
+    logger.info('armakom-log connectionEstablished before createConference');
     // FIXME: Workaround for the web version. Currently, the creation of the
     // conference is handled by /conference.js.
     typeof APP === 'undefined' && dispatch(createConference());
@@ -583,6 +583,14 @@ function _updateLocalParticipantInConference({ dispatch, getState }, next, actio
             // which was not reflected we need to set it (the first time we tried was before becoming moderator).
             if (typeof pendingSubjectChange !== 'undefined' && pendingSubjectChange !== subject) {
                 dispatch(setSubject(pendingSubjectChange));
+            }
+
+            // MARK - Armakom - Set conference password
+            const armakomPassword = password = jitsiLocalStorage.getItem('armakom-pass');
+            logger.info('armakom-log _updateLocalParticipantInConference lock room with armakom password if exists. armakomPassword:', armakomPassword);
+            if(typeof armakomPassword != 'undefined') {
+                logger.info('armakom-log send lock room request');
+                dispatch(setPassword(conference, conference.lock, armakomPassword));
             }
         }
     }

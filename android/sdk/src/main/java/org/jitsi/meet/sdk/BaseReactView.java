@@ -223,4 +223,8 @@ public abstract class BaseReactView<ListenerT>
     public void setListener(ListenerT listener) {
         this.listener = listener;
     }
+
+    public void armakomEmitBroadcastListener(String eventName, @Nullable Object data) {
+        ReactInstanceManagerHolder.emitEvent(eventName, data);
+    }
 }

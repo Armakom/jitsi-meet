@@ -8,6 +8,10 @@ import { OverlayContainer } from '../../overlay';
 import { appNavigate } from '../actions';
 import { getDefaultURL } from '../functions';
 
+import logger from '../logger';
+
+import { jitsiLocalStorage } from '@jitsi/js-utils'
+
 /**
  * The type of React {@code Component} props of {@link AbstractApp}.
  */
@@ -42,6 +46,8 @@ export class AbstractApp extends BaseApp<Props, *> {
         super.componentDidMount();
 
         this._init.then(() => {
+            logger.info('armakom-log AbsctractApp componentDidMount this.props:', this.props);
+            this.setRoomInfo(this.props.userInfo);
             // If a URL was explicitly specified to this React Component, then
             // open it; otherwise, use a default.
             this._openURL(toURLString(this.props.url) || this._getDefaultURL());
@@ -67,6 +73,8 @@ export class AbstractApp extends BaseApp<Props, *> {
                     // XXX Refer to the implementation of loadURLObject: in
                     // ios/sdk/src/JitsiMeetView.m for further information.
                     || previousTimestamp !== currentTimestamp) {
+                logger.info('armakom-log AbstractApp componentDidUpdate this.props:', this.props);
+                this.setRoomInfo(this.props.userInfo);
                 this._openURL(currentUrl || this._getDefaultURL());
             }
         });
@@ -111,5 +119,23 @@ export class AbstractApp extends BaseApp<Props, *> {
      */
     _openURL(url) {
         this.state.store.dispatch(appNavigate(toURLString(url)));
+    }
+
+    /**
+     * MARK - Armakom
+     * 
+     * Every room has a room id and password. 
+     * Therefore below parameters stored inside local storage to use when joining conference
+     */
+    setRoomInfo(userInfo) {
+        try {
+            jitsiLocalStorage.setItem('armakom-jwt', userInfo.jwt);
+            jitsiLocalStorage.setItem('armakom-user', userInfo.userRoomId);
+            logger.info('armakom-log userRoomId:', userInfo.userRoomId);
+            jitsiLocalStorage.setItem('armakom-pass', userInfo.userRoomPassword);
+            logger.info('armakom-log userRoomPassword:', userInfo.userRoomPassword);
+        } catch(error) {
+            logger.info('armakom-log Jitsi Local Storage Error occurred when saving room props. Error: ' + error);
+        }
     }
 }

@@ -160,6 +160,12 @@ static void initializeViewsMap() {
     [externalAPI sendSetVideoMuted:muted];
 }
 
+- (void)sendArmakomEvent:(NSString*)eventName :(NSObject*)data {
+    NSLog(@"%@%@", @"Endpoint text message received: ", data);
+    ExternalAPI *externalAPI = [[JitsiMeet sharedInstance] getExternalAPI];
+    [externalAPI armakomEmitBroadcastListener:eventName :data];
+}
+
 #pragma mark Private methods
 
 /**

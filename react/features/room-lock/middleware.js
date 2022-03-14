@@ -56,6 +56,7 @@ MiddlewareRegistry.register(store => next => action => {
                     titleKey: 'notify.passwordSetRemotely'
                 }, NOTIFICATION_TIMEOUT_TYPE.SHORT));
         } else if (previousLockedState === LOCKED_REMOTELY && !currentLockedState) {
+            // MARK - Armakom - password removed remotely notification
             store.dispatch(
                 showNotification({
                     titleKey: 'notify.passwordRemovedRemotely'

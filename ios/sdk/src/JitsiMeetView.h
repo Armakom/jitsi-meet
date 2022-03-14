@@ -45,5 +45,6 @@
 - (void)closeChat;
 - (void)sendChatMessage:(NSString * _Nonnull)message :(NSString * _Nullable)to;
 - (void)setVideoMuted:(BOOL)muted;
+- (void)sendArmakomEvent:(NSString*)eventName :(NSObject*)data;
 
 @end

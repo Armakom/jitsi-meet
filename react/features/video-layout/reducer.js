@@ -4,6 +4,7 @@ import { ReducerRegistry } from '../base/redux';
 
 import {
     SCREEN_SHARE_REMOTE_PARTICIPANTS_UPDATED,
+    SET_FILM_STRIP,
     SET_TILE_VIEW
 } from './actionTypes';
 
@@ -20,7 +21,17 @@ const DEFAULT_STATE = {
      * @public
      * @type {boolean}
      */
-    tileViewEnabled: undefined
+    tileViewEnabled: undefined,
+
+    // MARK - Armakom - filmStripEnabled option added
+    /**
+     * The indicator which determines whether the video layout should display
+     * video thumbnails with film strip layout.
+     *
+     * @public
+     * @type {boolean}
+     */
+     filmStripEnabled: undefined
 };
 
 const STORE_NAME = 'features/video-layout';
@@ -39,6 +50,13 @@ ReducerRegistry.register(STORE_NAME, (state = DEFAULT_STATE, action) => {
             ...state,
             tileViewEnabled: action.enabled
         };
+
+    // MARK - Armakom
+    case SET_FILM_STRIP:
+        return {
+            ...state,
+            filmStripEnabled: action.enabled
+        }
     }
 
     return state;

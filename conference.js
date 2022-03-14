@@ -751,6 +751,7 @@ export default {
 
         if (config.startSilent) {
             sendAnalytics(createStartSilentEvent());
+            // MARK - Armakom - Possible inproper ui component
             APP.store.dispatch(showNotification({
                 descriptionKey: 'notify.startSilentDescription',
                 titleKey: 'notify.startSilentTitle'

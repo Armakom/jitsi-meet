@@ -20,3 +20,14 @@ export const SCREEN_SHARE_REMOTE_PARTICIPANTS_UPDATED
  * }}
  */
 export const SET_TILE_VIEW = 'SET_TILE_VIEW';
+
+// MARK - Armakom
+/**
+ * The type of the action which enables or disables the feature for showing video filmstrip
+ * 
+ * @returns {{
+ *     type: SET_FILM_STRIP,
+ *     enabled: boolean
+ * }}
+ */
+export const SET_FILM_STRIP = 'SET_FILM_STRIP';

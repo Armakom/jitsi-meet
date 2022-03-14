@@ -27,6 +27,7 @@ static NSString * const openChatAction = @"org.jitsi.meet.OPEN_CHAT";
 static NSString * const closeChatAction = @"org.jitsi.meet.CLOSE_CHAT";
 static NSString * const sendChatMessageAction = @"org.jitsi.meet.SEND_CHAT_MESSAGE";
 static NSString * const setVideoMutedAction = @"org.jitsi.meet.SET_VIDEO_MUTED";
+static NSString * const sendArmakomEventAction = @"com.armakom.ardio.SEND_ARMAKOM_EVENT";
 
 @implementation ExternalAPI
 
@@ -49,7 +50,8 @@ RCT_EXPORT_MODULE();
         @"OPEN_CHAT": openChatAction,
         @"CLOSE_CHAT": closeChatAction,
         @"SEND_CHAT_MESSAGE": sendChatMessageAction,
-        @"SET_VIDEO_MUTED" : setVideoMutedAction
+        @"SET_VIDEO_MUTED" : setVideoMutedAction,
+        @"SEND_ARMAKOM_EVENT": sendArmakomEventAction
     };
 };
 
@@ -73,7 +75,8 @@ RCT_EXPORT_MODULE();
               openChatAction,
               closeChatAction,
               sendChatMessageAction,
-              setVideoMutedAction
+              setVideoMutedAction,
+              sendArmakomEventAction
     ];
 }
 
@@ -205,5 +208,12 @@ RCT_EXPORT_METHOD(sendEvent:(NSString *)name
     [self sendEventWithName:setVideoMutedAction body:data];
 }
 
+// MARK Armakom Handle Armakom emit events
+- (void)armakomEmitBroadcastListener:(NSString *)eventName :(NSObject *)data {
+    [self sendEventWithName:eventName
+                       body:@{
+                           @"enabled": data
+                       }];
+}
 
 @end

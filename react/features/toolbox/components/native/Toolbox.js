@@ -69,6 +69,7 @@ function Toolbox(props: Props) {
         ]
     };
 
+    // MARK - Armakom - Chat and OverflowMenu buttons commented
     return (
         <View
             pointerEvents = 'box-none'
@@ -84,31 +85,32 @@ function Toolbox(props: Props) {
                     styles = { buttonStylesBorderless }
                     toggledStyles = { toggledButtonStyles } />
                 {
-                    additionalButtons.has('chat')
-                      && <ChatButton
-                          styles = { buttonStylesBorderless }
-                          toggledStyles = { backgroundToggledStyle } />
+                    // additionalButtons.has('chat')
+                    //   && <ChatButton
+                    //       styles = { buttonStylesBorderless }
+                    //       toggledStyles = { backgroundToggledStyle } />
                 }
 
-                { additionalButtons.has('raisehand') && (_reactionsEnabled
+                {/* { additionalButtons.has('raisehand') && (_reactionsEnabled
                     ? <ReactionsMenuButton
                         styles = { buttonStylesBorderless }
                         toggledStyles = { backgroundToggledStyle } />
                     : <RaiseHandButton
                         styles = { buttonStylesBorderless }
-                        toggledStyles = { backgroundToggledStyle } />)}
+                        toggledStyles = { backgroundToggledStyle } />)} */}
                 {additionalButtons.has('tileview') && <TileViewButton styles = { buttonStylesBorderless } />}
-                {additionalButtons.has('participantspane')
-                && <ParticipantsPaneButton
-                    styles = { buttonStylesBorderless } />
+                {
+                    // additionalButtons.has('participantspane')
+                    // && <ParticipantsPaneButton
+                    //     styles = { buttonStylesBorderless } />
                 }
                 {additionalButtons.has('togglecamera')
                       && <ToggleCameraButton
                           styles = { buttonStylesBorderless }
                           toggledStyles = { backgroundToggledStyle } />}
-                <OverflowMenuButton
+                {/* <OverflowMenuButton
                     styles = { buttonStylesBorderless }
-                    toggledStyles = { toggledButtonStyles } />
+                    toggledStyles = { toggledButtonStyles } /> */}
                 <HangupButton
                     styles = { hangupButtonStyles } />
             </SafeAreaView>

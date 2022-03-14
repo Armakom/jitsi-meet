@@ -50,6 +50,7 @@ declare var interfaceConfig: Object;
 export function appNavigate(uri: ?string) {
     return async (dispatch: Dispatch<any>, getState: Function) => {
         let location = parseURIString(uri);
+        logger.info('armakom-log 1- appNavigate start location:', location);
 
         // If the specified location (URI) does not identify a host, use the app's
         // default.
@@ -71,6 +72,8 @@ export function appNavigate(uri: ?string) {
             }
         }
 
+        logger.info('armakom-log 2- appNavigate start location:', location);
+
         location.protocol || (location.protocol = 'https:');
         const { contextRoot, host, room } = location;
         const locationURL = new URL(location.toString());
@@ -78,6 +81,7 @@ export function appNavigate(uri: ?string) {
         // Disconnect from any current conference.
         // FIXME: unify with web.
         if (navigator.product === 'ReactNative') {
+            logger.info('armakom-log appNavigate before disconnect');
             dispatch(disconnect());
         }
 

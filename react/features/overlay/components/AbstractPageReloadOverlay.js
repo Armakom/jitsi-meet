@@ -152,6 +152,7 @@ export default class AbstractPageReloadOverlay<P: Props>
 
         let message, title;
 
+        // MARK - Armakom - Disconnected popup initializing
         if (this.props.isNetworkFailure) {
             title = 'dialog.conferenceDisconnectTitle';
             message = 'dialog.conferenceDisconnectMsg';

@@ -9,6 +9,8 @@ import { assignIfDefined } from '../util';
 
 import { SETTINGS_UPDATED } from './actionTypes';
 
+import logger from './logger';
+
 /**
  * The default/initial redux state of the feature {@code base/settings}.
  *
@@ -74,6 +76,7 @@ ReducerRegistry.register(STORE_NAME, (state = DEFAULT_STATE, action) => {
         return _initSettings(state);
 
     case SETTINGS_UPDATED:
+        logger.info('armakom-log [settings-reducer] SETTINGS_UPDATED action.settings:', JSON.stringify(action.settings));
         return {
             ...state,
             ...action.settings
@@ -114,6 +117,7 @@ function _initSettings(featureState) {
         displayName,
         email
     }, settings);
+    logger.info('armakom-log [settings-reducer] _initSettings settings:', JSON.stringify(settings));
 
     return settings;
 }

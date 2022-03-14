@@ -76,6 +76,8 @@ import {
 } from './functions';
 import logger from './logger';
 
+import { jitsiLocalStorage } from '@jitsi/js-utils';
+
 declare var APP: Object;
 
 /**
@@ -287,6 +289,7 @@ export function authStatusChanged(authEnabled: boolean, authLogin: string) {
  * @public
  */
 export function conferenceFailed(conference: Object, error: string, ...params: any) {
+    logger.log(`[armakom-log]-[base-conference] conferenceFailed error: ${error}`);
     return {
         type: CONFERENCE_FAILED,
         conference,
@@ -312,6 +315,7 @@ export function conferenceFailed(conference: Object, error: string, ...params: a
  * }}
  */
 export function conferenceJoined(conference: Object) {
+    logger.log(`[armakom-log]-[base-conference] conferenceJoined`);
     return {
         type: CONFERENCE_JOINED,
         conference
@@ -329,6 +333,7 @@ export function conferenceJoined(conference: Object) {
  * }}
  */
 export function conferenceLeft(conference: Object) {
+    logger.log(`[armakom-log]-[base-conference] conferenceLeft`);
     return {
         type: CONFERENCE_LEFT,
         conference
@@ -345,6 +350,7 @@ export function conferenceLeft(conference: Object) {
  * }}
  */
 export function conferenceSubjectChanged(subject: string) {
+    logger.log(`[armakom-log]-[base-conference] conferenceSubjectChanged`);
     return {
         type: CONFERENCE_SUBJECT_CHANGED,
         subject
@@ -361,6 +367,7 @@ export function conferenceSubjectChanged(subject: string) {
 * }}
 */
 export function conferenceTimestampChanged(conferenceTimestamp: number) {
+    logger.log(`[armakom-log]-[base-conference] conferenceTimestampChanged`);
     return {
         type: CONFERENCE_TIMESTAMP_CHANGED,
         conferenceTimestamp
@@ -377,6 +384,7 @@ export function conferenceTimestampChanged(conferenceTimestamp: number) {
 * }}
 */
 export function conferenceUniqueIdSet(conference: Object) {
+    logger.log(`[armakom-log]-[base-conference] conferenceUniqueIdSet`);
     return {
         type: CONFERENCE_UNIQUE_ID_SET,
         conference
@@ -393,6 +401,7 @@ export function conferenceUniqueIdSet(conference: Object) {
  * @returns {Function}
  */
 export function _conferenceWillJoin(conference: Object) {
+    logger.log(`[armakom-log]-[base-conference] _conferenceWillJoin`);
     return (dispatch: Dispatch<any>, getState: Function) => {
         const localTracks
             = getLocalTracks(getState()['features/base/tracks'])
@@ -460,8 +469,8 @@ export function createConference(overrideRoom?: string) {
             throw new Error('Cannot create a conference without a connection!');
         }
 
-        const { password, room } = state['features/base/conference'];
-
+        let { password, room } = state['features/base/conference'];
+        logger.info('armakom-log createConference room:', room, ' - password:', password);
         if (!room) {
             throw new Error('Cannot join a conference without a room name!');
         }
@@ -493,6 +502,11 @@ export function createConference(overrideRoom?: string) {
 
         const replaceParticipant = getReplaceParticipant(state);
 
+        // MARK - Armakom. update conference password with armakom password in case of password is undefined
+        if(typeof password === 'undefined') {
+            password = jitsiLocalStorage.getItem('armakom-pass');
+        }
+        logger.log(`[armakom-log]-[base-conference] before join password: ${password}`);
         conference.join(password, replaceParticipant);
     };
 }

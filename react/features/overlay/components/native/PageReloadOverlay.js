@@ -78,6 +78,7 @@ class PageReloadOverlay extends AbstractPageReloadOverlay<Props> {
         this.props.dispatch(reloadNow());
     }
 
+    // MARK - Armakom - Reconnect dialog
     /**
      * Implements React's {@link Component#render()}.
      *

@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 
 import { NotificationsContainer } from '../../notifications/components';
-import { shouldDisplayTileView } from '../../video-layout';
+import { shouldDisplayTileView, shouldDisplayFilmStrip } from '../../video-layout';
 import { shouldDisplayNotifications } from '../functions';
 
 /**
@@ -76,6 +76,7 @@ export function abstractMapStateToProps(state: Object) {
     return {
         _notificationsVisible: shouldDisplayNotifications(state),
         _room: state['features/base/conference'].room,
-        _shouldDisplayTileView: shouldDisplayTileView(state)
+        _shouldDisplayTileView: shouldDisplayTileView(state), 
+        _shouldDisplayFilmStrip: shouldDisplayFilmStrip(state)
     };
 }

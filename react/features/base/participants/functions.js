@@ -124,6 +124,25 @@ export function getParticipantById(
 }
 
 /**
+ * Returns participant by email from Redux state.
+ *
+ * @param {(Function|Object|Participant[])} stateful - The redux state
+ * features/base/participants, the (whole) redux state, or redux's
+ * {@code getState} function to be used to retrieve the state
+ * features/base/participants.
+ * @param {string} name - The email address of the participant to retrieve.
+ * @private
+ * @returns {(Participant|undefined)}
+ */
+ export function getParticipantByDisplayName(
+    stateful: Object | Function, name: string): ?Object {
+    const state = toState(stateful)['features/base/participants'];
+    const { local, remote } = state;
+
+    return remote.get(name) || (local?.name === name ? local : undefined);
+}
+
+/**
  * Returns the participant with the ID matching the passed ID or the local participant if the ID is
  * undefined.
  *

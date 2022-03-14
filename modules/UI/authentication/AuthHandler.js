@@ -191,6 +191,7 @@ function requireAuth(room: Object, lockPassword: string) {
         return;
     }
 
+    // MARK - Armakom - conference login requireAuth
     APP.store.dispatch(
         openAuthDialog(
         room.getName(), authenticate.bind(null, room, lockPassword))

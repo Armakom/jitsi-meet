@@ -148,6 +148,10 @@ export function shouldDisplayTileView(state: Object = {}) {
         return tileViewEnabled;
     }
 
+    // MARK - Armakom - TileView further conditions are removed
+    return false;
+
+    /*
     const { iAmRecorder } = state['features/base/config'];
 
     // None tile view mode is easier to calculate (no need for many negations), so we do
@@ -173,7 +177,15 @@ export function shouldDisplayTileView(state: Object = {}) {
     );
 
     return !shouldDisplayNormalMode;
+    */
 }
+
+// MARK Armakom - FilmStrip added
+export function shouldDisplayFilmStrip(state: Object = {}) {
+    const { filmStripEnabled } = state['features/video-layout'];
+    return filmStripEnabled;
+}
+
 
 /**
  * Private helper to automatically pin the latest screen share stream or unpin

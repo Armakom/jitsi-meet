@@ -65,12 +65,15 @@ export function isToolboxVisible(stateful: Object | Function) {
     const { toolbarConfig } = state['features/base/config'];
     const { alwaysVisible } = toolbarConfig || {};
     const { enabled, visible } = state['features/toolbox'];
-    const participantCount = getParticipantCountWithFake(state);
+    // const participantCount = getParticipantCountWithFake(state);
     const alwaysVisibleFlag = getFeatureFlag(state, TOOLBOX_ALWAYS_VISIBLE, false);
     const enabledFlag = getFeatureFlag(state, TOOLBOX_ENABLED, true);
 
-    return enabledFlag && enabled
-        && (alwaysVisible || visible || participantCount === 1 || alwaysVisibleFlag);
+    // MARK - Armakom - ignore participantCount condition
+    // return enabledFlag && enabled
+    //     && (alwaysVisible || visible || participantCount === 1 || alwaysVisibleFlag);
+    return enabledFlag && enabled 
+            && (alwaysVisible || visible || alwaysVisibleFlag);
 }
 
 /**

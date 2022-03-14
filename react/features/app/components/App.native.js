@@ -19,6 +19,24 @@ import type { Props as AbstractAppProps } from './AbstractApp';
 import '../middlewares';
 import '../reducers';
 
+import ArmakomEmitter from './ArmakomEmitter';
+
+import { muteLocal } from '../../video-menu/actions.any';
+import { MEDIA_TYPE, setVideoMuted } from '../../base/media';
+
+import { getLocalParticipant, getParticipantByDisplayName } from '../../base/participants/functions';
+import { pinParticipant } from '../../base/participants/actions';
+
+import { setTileView } from '../../video-layout/actions';
+import { setFilmstripEnabled, setFilmstripVisible } from '../../filmstrip/actions.native';
+
+import { setCameraFacingMode, toggleCameraFacingMode } from '../../base/media';
+
+import { setToolboxVisible } from '../../toolbox/actions.native';
+
+import { openDialog } from '../../base/dialog';
+import AudioRoutePickerDialog from '../../mobile/audio-mode/components/AudioRoutePickerDialog';
+
 declare var __DEV__;
 
 /**
@@ -86,9 +104,99 @@ export class App extends AbstractApp {
 
         SplashScreen.hide();
 
+        if(ArmakomEmitter) {
+            ArmakomEmitter.addListener('armakomEmitAudioEvent', data => {
+                const { dispatch } = this.state.store;
+                dispatch(muteLocal(data.enabled, MEDIA_TYPE.AUDIO));
+            })
+
+            ArmakomEmitter.addListener('armakomEmitVideoEvent', data => {
+                const { dispatch } = this.state.store;
+                dispatch(setVideoMuted(data.enabled));
+            })
+
+            ArmakomEmitter.addListener('armakomEmitPinLocalParticipant', data => {
+                if(getLocalParticipant) {
+                    const { dispatch, getState } = this.state.store;
+                    if(data.enabled) {
+                        const participant = getLocalParticipant(getState());
+                        if(participant) {
+                            const localId = participant.id;
+                            dispatch(pinParticipant(localId));
+                        } else {
+                            logger.info('armakom-log armakomEmitPinLocalParticipant local participant not found!');
+                        }
+                    } else {
+                        dispatch(pinParticipant(null));
+                    }
+                } else {
+                    logger.info('armakom-log armakomEmitPinLocalParticipant getLocalParticipant is undefined!');
+                }
+            })
+
+            ArmakomEmitter.addListener('armakomEmitEnableFilmStrip', data => {
+                const { dispatch } = this.state.store;
+                
+                dispatch(setFilmstripEnabled(data.enabled));
+                dispatch(setFilmstripVisible(data.enabled));
+            })
+
+            ArmakomEmitter.addListener('armakomEmitEnableTileView', data => {
+                const { dispatch } = this.state.store;
+                dispatch(setTileView(data.enabled));
+            })
+
+            ArmakomEmitter.addListener('armakomEmitToggleCamera', () => {
+                const { dispatch } = this.state.store;
+                dispatch(toggleCameraFacingMode());
+            })
+
+            ArmakomEmitter.addListener('armakomEmitSetCamera', data => {
+                const { dispatch } = this.state.store;
+                dispatch(setCameraFacingMode(data.enabled));
+            })
+
+            ArmakomEmitter.addListener('armakomEmitOpenAudioDialog', () => {
+                const { dispatch } = this.state.store;
+                dispatch(openDialog(AudioRoutePickerDialog));
+            })
+
+            ArmakomEmitter.addListener('armakomEmitChangeAudioMode', data => {
+                // if(AudioMode) {
+                //     AudioMode.setAudioDevice(data.enabled);
+                // }
+            })
+
+            ArmakomEmitter.addListener('armakomEmitPinParticipantByUsername', data => {
+                const { dispatch, getState } = this.state.store;
+                try {
+                    const participant = getParticipantByDisplayName(getState(), data.enabled);
+                    logger.info('armakom-log participant:', JSON.stringify(participant));
+                    if(participant) {
+                        dispatch(pinParticipant(participant.id));
+                    } else {
+                        dispatch(pinParticipant(null));
+                    }
+                } catch(error) {
+                    logger.info('armakom-log participant error:', error);
+                }
+            })
+
+            ArmakomEmitter.addListener('armakomEmitSetToolboxVisibility', data => {
+                try {
+                    const { dispatch } = this.state.store;
+                    dispatch(setToolboxVisible(data.enabled));
+                } catch(error) {
+                    logger.info('armakom-log armakomEmitSetToolboxVisibility error:', error);
+                }
+            })
+        } else {
+            console.log('Armakom ArmakomEmitter is null')
+        }
+
         this._init.then(() => {
             const { dispatch, getState } = this.state.store;
-
+            logger.info('armakom-log init');
             // We set these early enough so then we avoid any unnecessary re-renders.
             dispatch(updateFlags(this.props.flags));
 
@@ -99,7 +207,7 @@ export class App extends AbstractApp {
                 // As serverURL is provided externally, so we push it to settings.
                 if (typeof this.props.url !== 'undefined') {
                     const { serverURL } = this.props.url;
-
+                    logger.info('armakom-log serverURL:', serverURL);
                     if (typeof serverURL !== 'undefined') {
                         dispatch(updateSettings({ serverURL }));
                     }

@@ -254,6 +254,7 @@ class Conference extends AbstractConference<Props, *> {
             _connecting,
             _largeVideoParticipantId,
             _reducedUI,
+            _shouldDisplayFilmStrip,
             _shouldDisplayTileView,
             _toolboxVisible
         } = this.props;
@@ -275,7 +276,7 @@ class Conference extends AbstractConference<Props, *> {
                 {/*
                   * If there is a ringing call, show the callee's info.
                   */
-                    <CalleeInfoContainer />
+                    // <CalleeInfoContainer /> // MARK - Armakom
                 }
 
                 {/*
@@ -298,12 +299,13 @@ class Conference extends AbstractConference<Props, *> {
                         <DisplayNameLabel participantId = { _largeVideoParticipantId } />
                     </Container> }
 
-                    <LonelyMeetingExperience />
+                    {/* <LonelyMeetingExperience /> // MARK - Armakom */}
 
-                    { _shouldDisplayTileView || <><Filmstrip /><Toolbox /></> }
+                    {/* { _shouldDisplayTileView || <><Filmstrip /><Toolbox /></> } // MARK - Armakom */} 
+                    { _shouldDisplayTileView ? undefined : (_shouldDisplayFilmStrip ? <Filmstrip /> : undefined) }
                 </View>
 
-                <SafeAreaView
+                {/* <SafeAreaView
                     pointerEvents = 'box-none'
                     style = {
                         _toolboxVisible
@@ -312,12 +314,12 @@ class Conference extends AbstractConference<Props, *> {
                     <NavigationBar />
                     { this._renderNotificationsContainer() }
                     <KnockingParticipantList />
-                </SafeAreaView>
+                </SafeAreaView> // MARK - Armakom */}
 
                 <TestConnectionInfo />
-                { this._renderConferenceNotification() }
+                {/* { this._renderConferenceNotification() } // MARK - Armakom */}
 
-                {_shouldDisplayTileView && <Toolbox />}
+                {/* {_shouldDisplayTileView && <Toolbox />} // MARK - Armakom */}
             </>
         );
     }
